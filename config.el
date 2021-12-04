@@ -269,6 +269,8 @@
   (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
 
 (company-fuzzy-mode 1)
+
+
 ;;(setq flycheck-check-syntax-automatically t)
 
 (defun highlight-selected-window ()
@@ -281,3 +283,8 @@
 (add-hook 'buffer-list-update-hook 'highlight-selected-window)
 
 ;;'(highlight-numbers-number ((t (:foreground "#f0ad6d"))))
+(require 'which-key)
+(setq which-key-idle-delay 0.1)
+
+(require 'company-box)
+(add-hook 'company-mode-hook 'company-box-mode)

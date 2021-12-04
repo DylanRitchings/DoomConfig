@@ -71,3 +71,4 @@
 
 (package! company-lsp)
 
+(package! company-box)
