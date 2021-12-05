@@ -288,3 +288,9 @@
 
 (require 'company-box)
 (add-hook 'company-mode-hook 'company-box-mode)
+(with-eval-after-load 'evil-maps
+  (map! :n "j" 'evil-backward-char)
+  (map! :n ";" 'evil-forward-char)
+  (map! :n "k" 'evil-next-line)
+  (map! :n "l" 'evil-previous-line)
+)

@@ -72,3 +72,5 @@
 (package! company-lsp)
 
 (package! company-box)
+
+;; (package! snipe :disable t)
