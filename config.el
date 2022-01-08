@@ -308,6 +308,13 @@
       "k" 'ranger-next-file
       "l" 'ranger-prev-file)
 
+(map! :after magit
+      :map magit-mode-map
+      "j" 'magit-dispatch
+      ";" 'magit-log
+      "k" 'evil-next-visual-line
+      "l" 'evil-previous-visual-line)
+
 ;; CUSTOM COLOURS
 (custom-set-faces!
   '(line-number :foreground "#b8b8b8")
