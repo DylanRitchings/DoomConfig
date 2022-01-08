@@ -73,4 +73,8 @@
 
 (package! company-box)
 
-;; (package! snipe :disable t)
+(package! evil-snipe :disable t)
+
+(package! highlight)
+
+(package! lsp-ui)

@@ -53,15 +53,36 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(set-face-foreground 'font-lock-comment-face "SlateBlue1")
 
-(defun eshell-other-window ()
+(defun shell-vert ()
   (interactive)
-  (split-window)
+  (split-window-right)
   (other-window 1)
-  (eshell)
+  (term "/usr/bin/zsh")
   )
 
+(defun shell-this-window ()
+  (interactive)
+  (term "/usr/bin/zsh")
+  )
+
+(defun shell-hori ()
+  (interactive)
+  (split-window-below)
+  (other-window 1)
+  (term "/usr/bin/zsh")
+  )
+
+(map! :leader
+      (:prefix ("z" . "Shell")
+      :desc "Shell this window"
+      "t" #'shell-this-window
+      :desc "Verticle shell"
+      "v" #'shell-vert
+      :desc "Horizontal shell"
+      "h" #'shell-hori
+      :desc "Close shell"
+      "c" #'kill-buffer-and-window))
 
 ;; New file new window stuff
 
@@ -93,10 +114,6 @@
       :desc "Pull"
       "gp" #'magit-pull)
 
-;;COMMANDS
-(map! :leader
-      :desc "Open shell"
-      "1" #'eshell-other-window)
 
 ;; XREF JUMP
 
@@ -106,15 +123,6 @@
 (advice-add #'projectile-find-tag :around #'my*projectile-find-tag)
 
 (setq xref-prompt-for-identifier nil)
-
-(map! :leader
-      :desc "xref find decleration"
-      "=" #'+lookup/definition
-      :desc "xref back"
-      "-" #'xref-go-back
-      :desc "xref find reference"
-      "0" #'+lookup/references
-      )
 
 
 ;; ENTER IN EVIL STATE
@@ -195,28 +203,24 @@
       centaur-tabs-set-bar 'over
       centaur-tabs-set-icons t
       centaur-tabs-set-modified-marker t
-      centaur-tabs-modifier-marker "+"
+      centaur-tabs-modifier-marker "~"
       centaur-tabs-gray-out-icons t)
 (centaur-tabs-mode t)
+
+;; XREF and CENTAUR
 (map! :leader
-      :desc "xref find decleration"
+      :desc "tab forward"
       "l" #'centaur-tabs-forward
-      :desc "xref back"
+      :desc "tab backwards"
       "k" #'centaur-tabs-backward
       )
+(map! :leader
+      (:prefix ("c")
+      :mode lsp-ui-mode-map
+      :desc "xref back"
+      "b" #'xref-go-back
+))
 
-
-;; ;; COMPANY
-;; ;; (company-terraform-init)
-;; ;;   (setq company-require-match nil            ; Don't require match, so you can still move your cursor as expected.
-;; ;;         company-tooltip-align-annotations t  ; Align annotation to the right side.
-;; ;;         company-eclim-auto-save nil          ; Stop eclim auto save.
-;; ;;         company-dabbrev-downcase nil)
-;; ;;   ;; Enable downcase only when completing the completion.
-
-
-;; (setq flycheck-tflint-variable-files t)
-;; (setq flycheck-terraform-tflint-executable t)
 
 (setq lsp-terraform-server "/usr/bin/terraform-ls")
 (use-package lsp-mode
@@ -288,9 +292,41 @@
 
 (require 'company-box)
 (add-hook 'company-mode-hook 'company-box-mode)
-(with-eval-after-load 'evil-maps
-  (map! :n "j" 'evil-backward-char)
-  (map! :n ";" 'evil-forward-char)
-  (map! :n "k" 'evil-next-line)
-  (map! :n "l" 'evil-previous-line)
-)
+
+(remove-hook 'doom-first-input-hook #'evil-snipe-mode)
+(map! :map evil-motion-state-map "j" 'evil-backward-char)
+(map! :map evil-motion-state-map "k" 'evil-next-line)
+(map! :map evil-motion-state-map "l" 'evil-previous-line)
+(map!  :map evil-motion-state-map ";" 'evil-forward-char)
+
+
+;; RANGER Bind
+(map! :after ranger
+      :map ranger-mode-map
+      "j" 'ranger-up-directory
+      ";" 'ranger-find-file
+      "k" 'ranger-next-file
+      "l" 'ranger-prev-file)
+
+;; CUSTOM COLOURS
+(custom-set-faces!
+  '(line-number :foreground "#b8b8b8")
+  '(line-number-current-line :foreground "#9c78e3")
+  '(font-lock-comment-face :foreground "SlateBlue1")
+  )
+
+
+;; Solaire mode
+(solaire-global-mode -1)
+
+
+(setq doom-modeline-vcs-max-length 50)
+
+;;close terminal
+(defadvice flymake-start-syntax-check-process (after
+                                               cheeso-advice-flymake-start-syntax-check-1
+                                               (cmd args dir)
+                                               activate compile)
+  ;; set flag to allow exit without query on any
+  ;;active flymake processes
+  (set-process-query-on-exit-flag ad-return-value nil))
