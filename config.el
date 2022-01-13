@@ -58,20 +58,21 @@
   (interactive)
   (split-window-right)
   (other-window 1)
-  (term "/usr/bin/zsh")
+  (vterm "/usr/bin/zsh")
   )
 
 (defun shell-this-window ()
   (interactive)
-  (term "/usr/bin/zsh")
+  (vterm "/usr/bin/zsh")
   )
 
 (defun shell-hori ()
   (interactive)
-  (split-window-below)
+  (split-window-below 50)
   (other-window 1)
-  (term "/usr/bin/zsh")
+  (vterm "/usr/bin/zsh")
   )
+
 
 (map! :leader
       (:prefix ("z" . "Shell")
@@ -337,3 +338,8 @@
   ;; set flag to allow exit without query on any
   ;;active flymake processes
   (set-process-query-on-exit-flag ad-return-value nil))
+
+
+(global-set-key (kbd "<XF86Paste>") 'evil-paste-after)
+(global-set-key (kbd "<XF86Copy>") 'evil-yank)
+(setq confirm-kill-emacs nil)
