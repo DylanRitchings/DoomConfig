@@ -68,7 +68,7 @@
 
 (defun shell-hori ()
   (interactive)
-  (split-window-below 50)
+  (split-window-below 55)
   (other-window 1)
   (vterm "/usr/bin/zsh")
   )
@@ -207,6 +207,11 @@
       centaur-tabs-modifier-marker "~"
       centaur-tabs-gray-out-icons t)
 (centaur-tabs-mode t)
+
+(add-hook! 'vterm-mode-hook 'centaur-tabs-local-mode)
+(add-hook! 'comint-mode-hook 'centaur-tabs-local-mode)
+(add-hook! 'special-mode-hook 'centaur-tabs-local-mode)
+
 
 ;; XREF and CENTAUR
 (map! :leader
