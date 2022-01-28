@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: sg
+# key: sg
+# --
+
+resource "aws_security_group_rule" "$0" {
+  description       = "$1"
+  protocol          = "tcp"
+  security_group_id = $2
+  cidr_blocks       = [$3]
+  from_port         = $4
+  to_port           = $4
+  type              = "$5"
+}

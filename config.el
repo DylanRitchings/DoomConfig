@@ -83,7 +83,7 @@
       :desc "Horizontal shell"
       "h" #'shell-hori
       :desc "Close shell"
-      "c" #'kill-buffer-and-window))
+      "d" #'kill-buffer-and-window))
 
 ;; New file new window stuff
 
@@ -227,36 +227,61 @@
       "b" #'xref-go-back
 ))
 
+(map! :leader
+      (:prefix ("q")
+      :desc "Load saved session"
+      "l" #'doom/load-session "/.doom.d/sessions/"
+      )
+      (:prefix ("q")
+      :desc "Save session"
+      "s" #'doom/save-session "/.doom.d/sessions/"
+))
 
-(setq lsp-terraform-server "/usr/bin/terraform-ls")
-(use-package lsp-mode
-  :defer t
-  :commands lsp
-  :custom
-  (lsp-auto-guess-root nil)
-  (lsp-prefer-flymake nil) ; use flycheck instead of flymake
-  (lsp-enable-file-watchers nil)
-  (lsp-enable-folding nil)
-  (read-process-output-max (* 1024 1024))
-  (lsp-keep-workspace-alive nil)
-  (lsp-eldoc-hook nil)
-  :config
-  (lsp-register-client
-  (make-lsp-client :new-connection (lsp-stdio-connection '("/usr/bin/terraform-ls" "serve"))
-		    :major-modes '(terraform-mode)
-		    :server-id 'terraform-lsp))
-  :hook ((java-mode python-mode go-mode rust-mode
-		    js2-mode typescript-mode web-mode
-		    c-mode c++-mode objc-mode terraform-mode) . lsp-deferred)
-  :hook ((lsp-mode . lsp-ui-mode))
-  :config
-  (defun lsp-update-server ()
-    "update lsp server."
-    (interactive)
-    (lsp-install-server t)))
+;; (setq lsp-terraform-server "/usr/terraform-lsp")
+;; (use-package lsp-mode
+;;   :defer t
+;;   :commands lsp
+;;   :custom
+;;   (lsp-auto-guess-root t)
+;;   (lsp-prefer-flymake nil) ; use flycheck instead of flymake
+;;   ;; (lsp-enable-file-watchers nil)
+;;   (lsp-enable-folding nil)
+;;   (read-process-output-max (* 1024 1024))
+;;   ;; (lsp-keep-workspace-alive nil)
+;;   ;; (lsp-eldoc-hook nil)
+;; ;;/usr/bin/terraform-ls
+;;   :config
+;;   (lsp-register-client
+;;   (make-lsp-client :new-connection (lsp-stdio-connection '("/usr/bin/terraform-ls" "serve"))
+;; 		    :major-modes '(terraform-mode)
+;; 		    :server-id 'terraform-lsp))
+;;   :hook ((java-mode python-mode go-mode rust-mode
+;; 		    js2-mode typescript-mode web-mode
+;; 		    c-mode c++-mode objc-mode terraform-mode shell-mode) . lsp-deferred)
+;;   :hook ((lsp-mode . lsp-ui-mode))
+;;   :config
+;;   (defun lsp-update-server ()
+;;     "update lsp server."
+;;     (interactive)
+;;     (lsp-install-server t)))
 
-;;(setq flycheck-tflint-variable-files (list "data.tf" "variables.tf"))
 (global-visual-line-mode t)
+(after! lsp-ui
+(setq lsp-ui-sideline t)
+(setq lsp-ui-sideline-show-hover t)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-doc-enable t)
+(setq lsp-ui-doc-show-with-cursor t)
+(setq lsp-ui-doc-position "top")
+(setq lsp-ui-flycheck-enable t)
+(setq lsp-ui-sideline-show-flycheck t)
+)
+
+
+
+;; (after! flycheck
+;;   (setq flycheck-tflint-variable-files (list variables.tf data.tf))
+;;   )
 
 
 ;; COMPANY
@@ -276,10 +301,14 @@
     "Advice execute around `company-complete-selection' command."
     (let ((company-dabbrev-downcase t))
       (call-interactively fn))
-  (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+    (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
 
+(global-company-fuzzy-mode 1)
 (company-fuzzy-mode 1)
+(setq company-minimum-prefix-length 1
+      company-idle-delay 0.0) ;; default is 0.2
 
+(map! :n "<tab>" 'company-capf)
 
 ;;(setq flycheck-check-syntax-automatically t)
 
@@ -290,14 +319,14 @@
                     (with-current-buffer (window-buffer w)
                       (buffer-face-set '(:background "#111"))))))
   (buffer-face-set 'default))
-(add-hook 'buffer-list-update-hook 'highlight-selected-window)
+(add-hook! 'buffer-list-update-hook 'highlight-selected-window)
 
 ;;'(highlight-numbers-number ((t (:foreground "#f0ad6d"))))
 (require 'which-key)
 (setq which-key-idle-delay 0.1)
 
 (require 'company-box)
-(add-hook 'company-mode-hook 'company-box-mode)
+(add-hook! 'company-mode-hook 'company-box-mode)
 
 (remove-hook 'doom-first-input-hook #'evil-snipe-mode)
 (map! :map evil-motion-state-map "j" 'evil-backward-char)
@@ -347,4 +376,46 @@
 
 (global-set-key (kbd "<XF86Paste>") 'evil-paste-after)
 (global-set-key (kbd "<XF86Copy>") 'evil-yank)
+(global-set-key (kbd "M-;") 'comment-line)
 (setq confirm-kill-emacs nil)
+
+
+
+
+;; (flycheck-define-checker tflint
+;;   "Terraform linter tflint"
+;;   :command ("tflint"
+;;             source-inplace)
+;;   :error-parser flycheck-parse-checkstyle
+;;   :error-filter flycheck-dequalify-error-ids
+;;   :modes (terraform-mode))
+
+;; (add-to-list 'flycheck-checkers 'tflint)
+
+
+;; (defun flycheck-compile-tflint ()
+;;   (interactive)
+;;   (flycheck-compile 'tflint))
+
+;; (setq-default uniquify-buffer-name-style 'forward)
+;; (setq-default uniquify-strip-common-suffix t)
+;; (setq uniquify-after-kill-buffer-p t)
+;; (after! evil-surround
+;;   (let ((pairs '((?g "$" . "$")
+;;                  (?h "(" . ")")
+;;                  (?j "[" . "]")
+;;                  (?k "{" . "}")
+;;                  (?l "<" . ">")
+;;                  (?ø "'" . "'")
+;;                  (?æ "\"" . "\""))))
+;;     (prependq! evil-surround-pairs-alist pairs)
+;;     (prependq! evil-embrace-evil-surround-keys (mapcar #'car pairs))))
+;; (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
+
+(add-hook! 'lsp-mode-hook 'lsp-ui-mode)
+(add-hook! 'prog-mode-hook 'lsp!)
+(setq lsp-prefer-flymake nil)
+(setq lsp-ui-flycheck-enable nil)
+(setq lsp-ui-sideline-show-flycheck t)
+(setq flycheck-terraform-tflint-executable "/usr/local/bin/tflint")
+(setq evil-kill-on-visual-paste nil)
