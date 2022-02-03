@@ -302,14 +302,33 @@
     (let ((company-dabbrev-downcase t))
       (call-interactively fn))
     (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+(setq company-fuzzy-sorting-backend 'flx)
 
-(global-company-fuzzy-mode 1)
-(company-fuzzy-mode 1)
 (setq company-minimum-prefix-length 1
       company-idle-delay 0.0) ;; default is 0.2
 
 (map! :n "<tab>" 'company-capf)
+(require 'company-box)
+(add-hook! 'company-mode-hook 'company-box-mode)
 
+
+(setq global-company-fuzzy-mode t)
+;; (add-hook! 'company-mode 'company-fuzzy-mode)
+
+;; (after! company-mode
+;;   (add-hook! 'prog-mode-hook 'company-fuzzy-mode)
+;;   ;; (setq company-backends (company-fuzzy-all-other-backends))
+;;   (company-fuzzy-mode)
+;;   )
+;; (advice-add 'company-mode :after 'company-fuzzy-mode 1)
+;; (advice-add 'open-file :after 'company-fuzzy-mode 1)
+(after! doom-company
+  (setq company-fuzzy-mode 1)
+  (add-hook! 'find-file-hook 'company-fuzzy-mode)
+)
+;; (after! +company-init-backends-h
+;;     (company-fuzzy-mode)
+;;   )
 ;;(setq flycheck-check-syntax-automatically t)
 
 (defun highlight-selected-window ()
@@ -324,9 +343,6 @@
 ;;'(highlight-numbers-number ((t (:foreground "#f0ad6d"))))
 (require 'which-key)
 (setq which-key-idle-delay 0.1)
-
-(require 'company-box)
-(add-hook! 'company-mode-hook 'company-box-mode)
 
 (remove-hook 'doom-first-input-hook #'evil-snipe-mode)
 (map! :map evil-motion-state-map "j" 'evil-backward-char)
@@ -413,9 +429,61 @@
 ;; (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
 
 (add-hook! 'lsp-mode-hook 'lsp-ui-mode)
-(add-hook! 'prog-mode-hook 'lsp!)
+(add-hook! 'python-mode-hook 'lsp!)
+;; (add-hook! 'prog-mode-hook 'lsp!)
+(add-hook! 'terraform-mode-hook 'lsp!)
 (setq lsp-prefer-flymake nil)
 (setq lsp-ui-flycheck-enable nil)
 (setq lsp-ui-sideline-show-flycheck t)
 (setq flycheck-terraform-tflint-executable "/usr/local/bin/tflint")
 (setq evil-kill-on-visual-paste nil)
+
+;; Show pre commit buffer
+(add-hook! 'server-switch-hook 'magit-commit-diff)
+
+;; Do not use gpg agent when runing in terminal
+(defadvice epg--start (around advice-epg-disable-agent activate)
+  (let ((agent (getenv "GPG_AGENT_INFO")))
+    (setenv "GPG_AGENT_INFO" nil)
+    ad-do-it
+    (setenv "GPG_AGENT_INFO" agent)))
+
+
+
+;; RUN IN VTERM COMMAND TODO make stay open, make open in other window, make git workflow
+(defun run-in-vterm-kill (process event)
+  "A process sentinel. Kills PROCESS's buffer if it is live."
+  (let ((b (process-buffer process)))
+    (and (buffer-live-p b)
+         (kill-buffer b))))
+
+(defun run-in-vterm (command)
+  "Execute string COMMAND in a new vterm.
+
+Interactively, prompt for COMMAND with the current buffer's file
+name supplied. When called from Dired, supply the name of the
+file at point.
+
+Like `async-shell-command`, but run in a vterm for full terminal features.
+
+The new vterm buffer is named in the form `*foo bar.baz*`, the
+command and its arguments in earmuffs.
+
+When the command terminates, the shell remains open, but when the
+shell exits, the buffer is killed."
+  (interactive
+   (list
+    (let* ((f (cond (buffer-file-name)
+                    ((eq major-mode 'dired-mode)
+                     (dired-get-filename nil t))))
+           (filename (concat " " (shell-quote-argument (and f (file-relative-name f))))))
+      (read-shell-command "Terminal command: "
+                          (cons filename 0)
+                          (cons 'shell-command-history 1)
+                          (list filename)))))
+  (with-current-buffer (vterm (concat "*" command "*"))
+    (set-process-sentinel vterm--process #'run-in-vterm-kill)
+    (vterm-send-string command)
+    (vterm-send-return)))
+
+;;END RUN IN VTERM

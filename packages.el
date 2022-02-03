@@ -78,3 +78,7 @@
 (package! highlight)
 
 (package! lsp-ui)
+
+(package! flx)
+
+(package! company-flx)
