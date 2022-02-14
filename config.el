@@ -441,6 +441,14 @@
 ;; Show pre commit buffer
 (add-hook! 'server-switch-hook 'magit-commit-diff)
 
+;;LSP START
+(defun dotfiles--lsp-deferred-if-supported ()
+  "Run `lsp-deferred' if it's a supported mode."
+  (unless (derived-mode-p 'emacs-lisp-mode)
+    (lsp-deferred)))
+
+(add-hook! 'prog-mode-hook 'dotfiles--lsp-deferred-if-supported)
+
 ;; Do not use gpg agent when runing in terminal
 (defadvice epg--start (around advice-epg-disable-agent activate)
   (let ((agent (getenv "GPG_AGENT_INFO")))
@@ -487,3 +495,64 @@ shell exits, the buffer is killed."
     (vterm-send-return)))
 
 ;;END RUN IN VTERM
+
+(defun open-in-other-window (func)
+  (interactive)
+  (evil-window-split)
+  (funcall func)
+)
+
+(defun pre-commit()
+  (interactive)
+  (run-in-vterm "pre-commit run -a")
+    )
+
+(defun cleantf()
+  (interactive)
+  (run-in-vterm "cleantf"))
+
+(defun commit-with-pre()
+  (interactive)
+  (magit-stage-modified)
+  (split-window-below 55)
+  (other-window 1)
+  (pre-commit)
+  ;; (split-window-vertically)
+  (magit-commit-create)
+  )
+
+
+(map! :leader
+      "g" nil)
+
+;; (λ! (open-in-other-window 'commit)
+(map! :leader
+      (:prefix ("g" . "git")
+       "p" 'magit-pull
+       "P" 'magit-push
+       "b" 'magit-checkout
+       :desc "Commit"
+       "c" 'commit-with-pre
+       "B" 'magit-blame
+       "j" (λ! (open-in-other-window 'pre-commit))
+       ;; "d" 'open-in-other-window(magit-diff)
+       ;; "C" 'magit-clone--format-url
+       ;; "l" 'open-in-other-window(magit-log-all)
+       ;; "s" 'open-in-other-window(magit-status)
+       ))
+
+(map! :mode vterm-mode-hook
+      :after evil-normal-state
+      :nv "q" #'kill-buffer-and-window)
+
+
+;; (rainbow-delimiters-mode-enable)
+
+(after! prog-mode
+  (add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)
+)
+(defadvice epg--start (around advice-epg-disable-agent activate)
+  (let ((agent (getenv "GPG_AGENT_INFO")))
+    (setenv "GPG_AGENT_INFO" nil)
+    ad-do-it
+    (setenv "GPG_AGENT_INFO" agent)))
