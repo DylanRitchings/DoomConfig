@@ -27,6 +27,7 @@
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-one)
 
+;; (setq doom-theme 'doom-solarized-light)
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
@@ -208,9 +209,9 @@
       centaur-tabs-gray-out-icons t)
 (centaur-tabs-mode t)
 
-(add-hook! 'vterm-mode-hook 'centaur-tabs-local-mode)
-(add-hook! 'comint-mode-hook 'centaur-tabs-local-mode)
-(add-hook! 'special-mode-hook 'centaur-tabs-local-mode)
+;; (add-hook! 'vterm-mode-hook 'centaur-tabs-local-mode)
+;; (add-hook! 'comint-mode-hook 'centaur-tabs-local-mode)
+;; (add-hook! 'special-mode-hook 'centaur-tabs-local-mode)
 
 
 ;; XREF and CENTAUR
@@ -331,14 +332,14 @@
 ;;   )
 ;;(setq flycheck-check-syntax-automatically t)
 
-(defun highlight-selected-window ()
-  "Highlight selected window with a different background color."
-  (walk-windows (lambda (w)
-                  (unless (eq w (selected-window))
-                    (with-current-buffer (window-buffer w)
-                      (buffer-face-set '(:background "#111"))))))
-  (buffer-face-set 'default))
-(add-hook! 'buffer-list-update-hook 'highlight-selected-window)
+;; (defun highlight-selected-window ()
+;;   "Highlight selected window with a different background color."
+;;   (walk-windows (lambda (w)
+;;                   (unless (eq w (selected-window))
+;;                     (with-current-buffer (window-buffer w)
+;;                       (buffer-face-set '(:background "#111"))))))
+;;   (buffer-face-set 'default))
+;; (add-hook! 'buffer-list-update-hook 'highlight-selected-window)
 
 ;;'(highlight-numbers-number ((t (:foreground "#f0ad6d"))))
 (require 'which-key)
@@ -556,3 +557,13 @@ shell exits, the buffer is killed."
     (setenv "GPG_AGENT_INFO" nil)
     ad-do-it
     (setenv "GPG_AGENT_INFO" agent)))
+
+
+(map! :n
+      "C-k" 'evil-scroll-down
+      "C-l" 'evil-scroll-up)
+
+(add-hook! 'yaml-mode-hook 'ansible)
+(add-hook! 'yaml-mode-hook 'lsp)
+
+(which-key-mode)
