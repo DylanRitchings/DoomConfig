@@ -48,37 +48,4 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
-(package! flycheck)
-
-(package! dumb-jump)
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-
-(package! powershell)
-(add-to-list 'auto-mode-alist '("\\.ps1\\'" . powershell-mode))
-
-(package! company-terraform)
-
-(package! centaur-tabs)
-
-
-(package! company-fuzzy)
-
-(package! company-quickhelp)
-
-(package! yasnippet-snippets)
-
-(package! company-tabnine)
-
-(package! company-lsp)
-
-(package! company-box)
-
 (package! evil-snipe :disable t)
-
-(package! highlight)
-
-(package! lsp-ui)
-
-(package! flx)
-
-(package! company-flx)
