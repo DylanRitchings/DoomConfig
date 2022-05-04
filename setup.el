@@ -7,6 +7,20 @@
 (define-key evil-motion-state-map "k" 'evil-next-line)
 (define-key evil-motion-state-map "l" 'evil-previous-line)
 
+(map! :after ranger
+      :map ranger-mode-map
+      "j" 'ranger-up-directory
+      ";" 'ranger-find-file
+      "k" 'ranger-next-file
+      "l" 'ranger-prev-file)
+
+(map! :after magit
+      :map magit-mode-map
+      "j" 'magit-dispatch
+      ";" 'magit-log
+      "k" 'evil-next-visual-line
+      "l" 'evil-previous-visual-line)
+
 (map! :leader
       ;; Navigation
       "<left>"     #'evil-window-left
@@ -120,3 +134,60 @@
       centaur-tabs-modifier-marker "~"
       centaur-tabs-gray-out-icons t)
 (centaur-tabs-mode t)
+
+(after! lsp-ui
+(setq lsp-ui-sideline t)
+(setq lsp-ui-sideline-show-hover t)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-doc-enable t)
+(setq lsp-ui-doc-show-with-cursor t)
+(setq lsp-ui-doc-position "top")
+(setq lsp-ui-flycheck-enable t)
+(setq lsp-ui-sideline-show-flycheck t)
+)
+
+(defun dotfiles--lsp-deferred-if-supported ()
+  "Run `lsp-deferred' if it's a supported mode."
+  (unless (derived-mode-p 'emacs-lisp-mode)
+    (lsp-deferred)))
+
+(add-hook! 'prog-mode-hook 'dotfiles--lsp-deferred-if-supported)
+(add-hook! 'terraform-mode 'lsp-mode)
+(add-hook! 'python-mode 'lsp-mode)
+
+(setq company-backends
+    '((company-files :with company-yasnippet company-terraform company-tabnine)
+      (company-capf :with company-yasnippet company-terraform company-tabnine)
+      (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet company-terraform company-tabnine)
+      (company-dabbrev :with company-yasnippet company-terraform company-tabnine)))
+(company-quickhelp-mode)
+(setq global-company-mode t)
+
+(defun jcs--company-complete-selection--advice-around (fn)
+    "Advice execute around `company-complete-selection' command."
+    (let ((company-dabbrev-downcase t))
+      (call-interactively fn))
+    (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+(setq company-fuzzy-sorting-backend 'flx)
+
+(setq company-minimum-prefix-length 1
+      company-idle-delay 0.0) ;; default is 0.2
+
+(map! :n "<tab>" 'company-capf)
+(require 'company-box)
+(add-hook! 'company-mode-hook 'company-box-mode)
+
+
+
+(company-fuzzy-mode)
+
+(after! doom-company
+  (setq company-fuzzy-mode 1)
+  (add-hook! 'find-file-hook 'company-fuzzy-mode)
+)
+(add-hook! 'terraform-mode 'company-fuzzy-mode)
+(after! terraform-mode
+  (company-terraform-init)
+                )
+
+(add-hook! 'prog-mode-hook 'visual-line-mode)
