@@ -110,13 +110,16 @@
 (global-set-key (kbd "M-DEL") 'kill-line)
 
 (map! :leader
-      :desc "tab forward"
-      "l" #'centaur-tabs-forward
-      :desc "tab backwards"
-      "k" #'centaur-tabs-backward
-      )
+      (:prefix ("c")
+      :mode lsp-ui-mode-map
+      :desc "xref back"
+      "b" #'xref-go-back
+))
 
 (global-set-key (kbd "M-;") 'comment-line)
+
+(after! save-buffer
+  (set-buffer-file-coding-system unix))
 
 (setq confirm-kill-emacs nil)
 
@@ -133,7 +136,16 @@
       centaur-tabs-set-modified-marker t
       centaur-tabs-modifier-marker "~"
       centaur-tabs-gray-out-icons t)
+(after! centaur-tabs
+  (centaur-tabs-group-by-projectile-project))
 (centaur-tabs-mode t)
+
+(map! :leader
+      :desc "tab forward"
+      "l" #'centaur-tabs-forward
+      :desc "tab backwards"
+      "k" #'centaur-tabs-backward
+      )
 
 (after! lsp-ui
 (setq lsp-ui-sideline t)
@@ -168,26 +180,63 @@
     (let ((company-dabbrev-downcase t))
       (call-interactively fn))
     (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+
+(after! terraform-mode
 (setq company-fuzzy-sorting-backend 'flx)
 
 (setq company-minimum-prefix-length 1
       company-idle-delay 0.0) ;; default is 0.2
 
 (map! :n "<tab>" 'company-capf)
-(require 'company-box)
-(add-hook! 'company-mode-hook 'company-box-mode)
 
 
 
-(company-fuzzy-mode)
+;; (company-fuzzy-mode 1)
 
-(after! doom-company
+;; (after! doom-company
+;;   (setq company-fuzzy-mode 1)
+;;   (add-hook! 'find-file-hook 'company-fuzzy-mode)
+;; )
+(after! company
   (setq company-fuzzy-mode 1)
   (add-hook! 'find-file-hook 'company-fuzzy-mode)
 )
-(add-hook! 'terraform-mode 'company-fuzzy-mode)
-(after! terraform-mode
-  (company-terraform-init)
-                )
+)
+;; (add-hook! 'terraform-mode-hook 'company-fuzzy-mode)
+
+;; (setq global-company-mode t)
+
+;; (after! terraform-mode
+;;   (company-fuzzy-mode))
+;; (company-fuzzy-mode)
+;; (company-fuzzy-mode)
+
+
+
+(add-hook! scala-mode-hook dap-mode)
+(add-hook! scala-mode-hook dap-ui-mode)
 
 (add-hook! 'prog-mode-hook 'visual-line-mode)
+(add-hook! 'prog-mode-hook 'popwin-mode)
+
+;; (push "*format-all-errors*" popwin:special-display-config)
+;; (push '(dired-mode :position top) popwin:special-display-config)
+;; ;; vc
+;; (push "*vc-diff*" popwin:special-display-config)
+;; (push "*vc-change-log*" popwin:special-display-config)
+
+(setq compilation-window-height 15)
+
+;; ;; Helper for compilation. Close the compilation window if
+;; ;; there was no error at all. (emacs wiki)
+;; (defun compilation-exit-autoclose (status code msg)
+;;   ;; If M-x compile exists with a 0
+;;   (when (and (eq status 'exit) (zerop code))
+;;     ;; then bury the *compilation* buffer, so that C-x b doesn't go there
+;;     (bury-buffer)
+;;     ;; and delete the *compilation* window
+;;     (delete-window (get-buffer-window (get-buffer "*format-all-errors*"))))
+;;   ;; Always return the anticipated result of compilation-exit-message-function
+;;   (cons msg code))
+;; ;; Specify my function (maybe I should have done a lambda function)
+;; (setq compilation-exit-message-function 'compilation-exit-autoclose)

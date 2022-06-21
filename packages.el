@@ -70,3 +70,21 @@
 (package! highlight)
 
 (package! lsp-ui)
+
+(package! org-contrib)
+(package! ox-jira)
+
+(package! popwin)
+
+(package! lsp-metals)
+
+(use-package posframe)
+(package! dap-mode)
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
