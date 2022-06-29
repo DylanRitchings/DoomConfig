@@ -22,21 +22,22 @@
       "l" 'evil-previous-visual-line)
 
 (map! :leader
-      ;; Navigation
-      "<left>"     #'evil-window-left
-      "<down>"     #'evil-window-down
-      "<up>"       #'evil-window-up
-      "<right>"    #'evil-window-right
-      ;; Swapping windows
-      "C-<left>"       #'+evil/window-move-left
-      "C-<down>"       #'+evil/window-move-down
-      "C-<up>"         #'+evil/window-move-up
-      "C-<right>"      #'+evil/window-move-right
-      "M-<right>" #'evil-window-vsplit
-      "M-<down>" #'evil-window-split)
+    ;; Navigation
+    "<left>"     #'evil-window-left
+    "<down>"     #'evil-window-down
+    "<up>"       #'evil-window-up
+    "<right>"    #'evil-window-right
+    ;; Swapping windows
+    "C-<left>"       #'+evil/window-move-left
+    "C-<down>"       #'+evil/window-move-down
+    "C-<up>"         #'+evil/window-move-up
+    "C-<right>"      #'+evil/window-move-right
+    "M-<right>" #'evil-window-vsplit
+    "M-<down>" #'evil-window-split)
 
 (global-set-key (kbd "<XF86Paste>") 'evil-paste-after)
 (global-set-key (kbd "<XF86Copy>") 'evil-yank)
+(setq evil-kill-on-visual-paste nil)
 
 (defun shell-vert ()
   (interactive)
@@ -66,7 +67,8 @@
       :desc "Horizontal shell"
       "h" #'shell-hori
       :desc "Close shell"
-      "d" #'kill-buffer-and-window))
+      "d" #'kill-buffer-and-window)
+      )
 
 (defun aborn/backward-kill-word ()
   "Customize/Smart backward-kill-word."
@@ -145,6 +147,10 @@
       "l" #'centaur-tabs-forward
       :desc "tab backwards"
       "k" #'centaur-tabs-backward
+      :desc "buffer-forward"
+      ";" #'next-buffer
+      :desc "buffer-backwards"
+      "j" #'previous-buffer
       )
 
 (after! lsp-ui
@@ -168,53 +174,72 @@
 (add-hook! 'python-mode 'lsp-mode)
 
 (setq company-backends
-    '((company-files :with company-yasnippet company-terraform company-tabnine)
-      (company-capf :with company-yasnippet company-terraform company-tabnine)
-      (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet company-terraform company-tabnine)
-      (company-dabbrev :with company-yasnippet company-terraform company-tabnine)))
+    '(
+      ;; (company-files :with company-yasnippet company-terraform company-tabnine)
+      (company-capf :with company-yasnippet  company-tabnine)
+;;       (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet company-terraform company-tabnine)
+;;       (company-dabbrev :with company-yasnippet company-terraform company-tabnine)
+      ))
 (company-quickhelp-mode)
-(setq global-company-mode t)
+;; (setq global-company-mode t)
+(add-hook! 'lsp-managed-mode-hook (lambda () (setq-local company-backends )))
+(company-terraform-init)
+;; (add-hook! 'terraform-mode (lambda () (setq-local company-backends '((company-capf :with company-terraform)))))
+(add-hook! 'after-init-hook 'company-flx-mode)
+(add-hook! 'after-init-hook 'global-company-mode)
 
-(defun jcs--company-complete-selection--advice-around (fn)
-    "Advice execute around `company-complete-selection' command."
-    (let ((company-dabbrev-downcase t))
-      (call-interactively fn))
-    (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+;; (defun jcs--company-complete-selection--advice-around (fn)
+;;     "Advice execute around `company-complete-selection' command."
+;;     (let ((company-dabbrev-downcase t))
+;;       (call-interactively fn))
+;;     (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
 
-(after! terraform-mode
-(setq company-fuzzy-sorting-backend 'flx)
+;; (after! terraform-mode
+;; (setq company-fuzzy-sorting-backend 'flx)
 
-(setq company-minimum-prefix-length 1
-      company-idle-delay 0.0) ;; default is 0.2
+;; (setq company-minimum-prefix-length 1
+;;       company-idle-delay 0.0) ;; default is 0.2
 
-(map! :n "<tab>" 'company-capf)
+;; (map! :n "<tab>" 'company-capf)
 
 
 
-;; (company-fuzzy-mode 1)
+;; ;; (company-fuzzy-mode 1)
 
-;; (after! doom-company
+;; ;; (after! doom-company
+;; ;;   (setq company-fuzzy-mode 1)
+;; ;;   (add-hook! 'find-file-hook 'company-fuzzy-mode)
+;; ;; )
+;; (after! company
 ;;   (setq company-fuzzy-mode 1)
 ;;   (add-hook! 'find-file-hook 'company-fuzzy-mode)
 ;; )
-(after! company
-  (setq company-fuzzy-mode 1)
-  (add-hook! 'find-file-hook 'company-fuzzy-mode)
-)
-)
-;; (add-hook! 'terraform-mode-hook 'company-fuzzy-mode)
+;; )
+;; ;; (add-hook! 'terraform-mode-hook 'company-fuzzy-mode)
 
-;; (setq global-company-mode t)
+;; ;; (setq global-company-mode t)
 
-;; (after! terraform-mode
-;;   (company-fuzzy-mode))
-;; (company-fuzzy-mode)
-;; (company-fuzzy-mode)
+;; ;; (after! terraform-mode
+;; ;;   (company-fuzzy-mode))
+;; ;; (company-fuzzy-mode)
+;; ;; (company-fuzzy-mode)
 
 
 
 (add-hook! scala-mode-hook dap-mode)
 (add-hook! scala-mode-hook dap-ui-mode)
+
+(defun vterm-sbt ()
+  (interactive)
+  (split-window-below 55)
+  (other-window 1)
+  (vterm "/usr/bin/zsh" "sbt")
+  )
+
+(map! :leader
+      (:prefix ("z" . "Shell")
+      :desc "Run Scala"
+      "s" #'vterm-sbt))
 
 (add-hook! 'prog-mode-hook 'visual-line-mode)
 (add-hook! 'prog-mode-hook 'popwin-mode)
@@ -240,3 +265,13 @@
 ;;   (cons msg code))
 ;; ;; Specify my function (maybe I should have done a lambda function)
 ;; (setq compilation-exit-message-function 'compilation-exit-autoclose)
+
+;; start-server
+(add-hook! 'after-init-hook 'server-mode)
+
+
+(map! :leader
+      (:prefix ("w")
+      :desc "Horizontal window"
+      "h" #'split-window-below)
+      )
