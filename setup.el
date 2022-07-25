@@ -35,8 +35,13 @@
     "M-<right>" #'evil-window-vsplit
     "M-<down>" #'evil-window-split)
 
+(map! :after evil
+      :ni "C-c" #'evil-yank
+      :ni "C-v" #'evil-paste-after)
+
 (global-set-key (kbd "<XF86Paste>") 'evil-paste-after)
 (global-set-key (kbd "<XF86Copy>") 'evil-yank)
+
 (setq evil-kill-on-visual-paste nil)
 
 (defun shell-vert ()

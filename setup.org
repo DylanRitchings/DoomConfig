@@ -45,8 +45,13 @@
 #+END_SRC
 ** Copy Paste
 #+BEGIN_SRC emacs-lisp
+(map! :after evil
+      :ni "C-c" #'evil-yank
+      :ni "C-v" #'evil-paste-after)
+
 (global-set-key (kbd "<XF86Paste>") 'evil-paste-after)
 (global-set-key (kbd "<XF86Copy>") 'evil-yank)
+
 (setq evil-kill-on-visual-paste nil)
 #+END_SRC
 ** Shell Window
@@ -82,6 +87,10 @@
       "d" #'kill-buffer-and-window)
       )
 #+END_SRC
+
+#+RESULTS:
+: kill-buffer-and-window
+
 ** Backward kill word
 #+BEGIN_SRC emacs-lisp
 (defun aborn/backward-kill-word ()
