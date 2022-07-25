@@ -307,6 +307,32 @@ debugging scala
       :desc "Run Scala"
       "s" #'vterm-sbt))
 #+end_src
+** Terraform
+#+begin_src emacs-lisp
+;; (after! terraform-mode
+
+;;                 )
+#+end_src
+
+* Visual
+** Bookmark
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("v" . "Bookmark")
+      :mode lsp-ui-mode-map
+      :desc "toggle bookmark"
+      "b" #'bm-toggle
+      :desc "bookmark prev"
+      "k" #'bm-previous
+      :desc "bookmark next"
+      "l" #'bm-next
+))
+
+#+end_src
+** Rainbow
+#+begin_src emacs-lisp
+(add-hook! 'prog-mode-hook 'rainbow-delimiters-mode)
+#+end_src
 
 * QUICK FIX
 #+BEGIN_SRC emacs-lisp

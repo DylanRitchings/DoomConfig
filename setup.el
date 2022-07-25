@@ -241,6 +241,23 @@
       :desc "Run Scala"
       "s" #'vterm-sbt))
 
+;; (after! terraform-mode
+
+;;                 )
+
+(map! :leader
+      (:prefix ("v" . "Bookmark")
+      :mode lsp-ui-mode-map
+      :desc "toggle bookmark"
+      "b" #'bm-toggle
+      :desc "bookmark prev"
+      "k" #'bm-previous
+      :desc "bookmark next"
+      "l" #'bm-next
+))
+
+(add-hook! 'prog-mode-hook 'rainbow-delimiters-mode)
+
 (add-hook! 'prog-mode-hook 'visual-line-mode)
 (add-hook! 'prog-mode-hook 'popwin-mode)
 

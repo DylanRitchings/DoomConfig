@@ -51,7 +51,7 @@
 (package! evil-snipe :disable t)
 
 (package! dumb-jump)
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+(add-hook! 'xref-backend-functions #'dumb-jump-xref-activate)
 
 (package! powershell)
 (add-to-list 'auto-mode-alist '("\\.ps1\\'" . powershell-mode))
@@ -78,8 +78,11 @@
 
 (package! lsp-metals)
 
+(package! bm)
+
 (use-package posframe)
 (package! dap-mode)
+
 (use-package sbt-mode
   :commands sbt-start sbt-command
   :config
