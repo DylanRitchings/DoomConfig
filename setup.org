@@ -380,4 +380,8 @@ debugging scala
       "h" #'split-window-below)
       )
 
+(map! :after evil
+      :n "(" #'backward-sexp
+      :n ")" #'forward-sexp)
+
 #+END_SRC

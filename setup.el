@@ -297,3 +297,7 @@
       :desc "Horizontal window"
       "h" #'split-window-below)
       )
+
+(map! :after evil
+      :n "(" #'backward-sexp
+      :n ")" #'forward-sexp)
