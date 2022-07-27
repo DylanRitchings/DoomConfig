@@ -48,37 +48,46 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
-(package! flycheck)
+(package! evil-snipe :disable t)
 
 (package! dumb-jump)
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+(add-hook! 'xref-backend-functions #'dumb-jump-xref-activate)
 
 (package! powershell)
 (add-to-list 'auto-mode-alist '("\\.ps1\\'" . powershell-mode))
 
 (package! company-terraform)
+(package! company-fuzzy)
+(package! company-quickhelp)
+(package! company-tabnine)
+(package! company-lsp)
+(package! company-box)
+(package! flx)
+(package! company-flx)
 
 (package! centaur-tabs)
-
-
-(package! company-fuzzy)
-
-(package! company-quickhelp)
-
-(package! yasnippet-snippets)
-
-(package! company-tabnine)
-
-(package! company-lsp)
-
-(package! company-box)
-
-(package! evil-snipe :disable t)
 
 (package! highlight)
 
 (package! lsp-ui)
 
-(package! flx)
+(package! org-contrib)
+(package! ox-jira)
 
-(package! company-flx)
+(package! popwin)
+
+(package! lsp-metals)
+
+(package! bm)
+
+(use-package posframe)
+(package! dap-mode)
+
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
