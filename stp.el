@@ -1,9 +1,3 @@
-* Basic and Navigation Bindings
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
-** Movement
-#+BEGIN_SRC emacs-lisp
 (remove-hook 'doom-first-input-hook #'evil-snipe-mode)
 
 (define-key evil-motion-state-map "j" 'evil-backward-char)
@@ -29,10 +23,6 @@
       :n "C-M-s-j" #'evil-backward-paragraph
       :n "C-M-s-k" #'evil-forward-paragraph)
 
-#+END_SRC
-
-** Window movement
-#+BEGIN_SRC emacs-lisp
 (map! :leader
     ;; Navigation
     "<left>"     #'evil-window-left
@@ -46,9 +36,7 @@
     "C-<right>"      #'+evil/window-move-right
     "M-<right>" #'evil-window-vsplit
     "M-<down>" #'evil-window-split)
-#+END_SRC
-** Copy Paste
-#+BEGIN_SRC emacs-lisp
+
 (map!
       :niv "s-c" #'evil-yank
       :niv "s-v" #'evil-paste-after)
@@ -61,9 +49,7 @@
 (global-set-key (kbd "<XF86Copy>") 'evil-yank)
 
 (setq evil-kill-on-visual-paste nil)
-#+END_SRC
-** Shell Window
-#+BEGIN_SRC emacs-lisp
+
 (defun shell-vert ()
   (interactive)
   (split-window-right)
@@ -94,11 +80,7 @@
       :desc "Close shell"
       "d" #'kill-buffer-and-window)
       )
-#+END_SRC
 
-
-** Backward kill word
-#+BEGIN_SRC emacs-lisp
 (defun aborn/backward-kill-word ()
   "Customize/Smart backward-kill-word."
   (interactive)
@@ -134,73 +116,32 @@
 
 (global-set-key  [C-backspace]
             'aborn/backward-kill-word)
-#+END_SRC
 
-** Alt kill to end of line
-#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-<backspace>") (lambda ()
 				       (interactive)
 				       (kill-line 0)))
 (global-set-key (kbd "M-DEL") 'kill-line)
-#+END_SRC
 
-** XREF back
-#+begin_SRC emacs-lisp
 (map! :leader
       (:prefix ("c")
       :mode lsp-ui-mode-map
       :desc "xref back"
       "b" #'xref-go-back
 ))
-#+end_SRC
-* Programming commands
-** Comment line
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "M-;") 'comment-line)
-#+END_SRC
-** Fix line endings on save
 
-#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "M-;") 'comment-line)
+
 (after! save-buffer
   (set-buffer-file-coding-system unix))
-#+END_SRC
 
-#+RESULTS:
-
-* Ease Of Use
-** Small IDE changes
-#+BEGIN_SRC emacs-lisp
 (setq confirm-kill-emacs nil)
 
 (setq doom-modeline-vcs-max-length 50)
 
-
-#+END_SRC
-** Whichkey
-#+BEGIN_SRC emacs-lisp
 (require 'which-key)
 (setq which-key-idle-delay 0.1)
 (which-key-mode)
-#+END_SRC
-** Open in iterm
-#+BEGIN_SRC emacs-lisp
-(defun open-iterm ()
-  (interactive)
-  (shell-command "open -a iterm.app .")
-)
 
-(map! :leader
-      (:prefix ("z")
-      :desc "Open current location in iterm"
-      "x" #'open-iterm
-      ))
-
-#+END_SRC
-
-
-* Package configs
-** Centaur tabs
-#+BEGIN_SRC emacs-lisp
 (setq centaur-tabs-style "bar"
       centaur-tabs-headline-match t
       centaur-tabs-set-bar 'over
@@ -211,9 +152,7 @@
 (after! centaur-tabs
   (centaur-tabs-group-by-projectile-project))
 (centaur-tabs-mode t)
-#+END_SRC
-*** Bindings
-#+begin_SRC emacs-lisp
+
 (map! :leader
       :desc "tab forward"
       "l" #'centaur-tabs-forward
@@ -224,11 +163,7 @@
       :desc "buffer-backwards"
       "j" #'previous-buffer
       )
-#+end_SRC
 
-** LSP
-*** UI
-#+BEGIN_SRC emacs-lisp
 (after! lsp-ui
 (setq lsp-ui-sideline t)
 (setq lsp-ui-sideline-show-hover t)
@@ -239,9 +174,7 @@
 (setq lsp-ui-flycheck-enable t)
 (setq lsp-ui-sideline-show-flycheck t)
 )
-#+END_SRC
-*** Hook
-#+BEGIN_SRC emacs-lisp
+
 (defun dotfiles--lsp-deferred-if-supported ()
   "Run `lsp-deferred' if it's a supported mode."
   (unless (derived-mode-p 'emacs-lisp-mode)
@@ -250,14 +183,7 @@
 (add-hook! 'prog-mode-hook 'dotfiles--lsp-deferred-if-supported)
 (add-hook! 'terraform-mode 'lsp-mode)
 (add-hook! 'python-mode 'lsp-mode)
-#+END_SRC
 
-#+RESULTS:
-
-*** Terraform
-** Company #TODO Get AWS company working with  fuzzy
-*** Setup
-#+BEGIN_SRC emacs-lisp
 (setq company-backends
     '(
       ;; (company-files :with company-yasnippet company-terraform company-tabnine)
@@ -272,12 +198,7 @@
 ;; (add-hook! 'terraform-mode (lambda () (setq-local company-backends '((company-capf :with company-terraform)))))
 (add-hook! 'after-init-hook 'company-flx-mode)
 (add-hook! 'after-init-hook 'global-company-mode)
-;; (after! terraform-mode
-;;   company-terraform-init
-;;                 )
-#+END_SRC
-*** Fuzzy
-#+BEGIN_SRC emacs-lisp
+
 ;; (defun jcs--company-complete-selection--advice-around (fn)
 ;;     "Advice execute around `company-complete-selection' command."
 ;;     (let ((company-dabbrev-downcase t))
@@ -313,21 +234,12 @@
 ;; ;;   (company-fuzzy-mode))
 ;; ;; (company-fuzzy-mode)
 ;; ;; (company-fuzzy-mode)
-#+END_SRC
-* Languages
-** Scala
-*** sbt mode
-#+begin_src emacs-lisp
 
-#+end_src
-*** metals
-debugging scala
-#+begin_src emacs-lisp
+
+
 (add-hook! scala-mode-hook dap-mode)
 (add-hook! scala-mode-hook dap-ui-mode)
-#+end_src
-*** run in zshell
-#+begin_src emacs-lisp
+
 (defun vterm-sbt ()
   (interactive)
   (split-window-below 55)
@@ -339,17 +251,11 @@ debugging scala
       (:prefix ("z" . "Shell")
       :desc "Run Scala"
       "s" #'vterm-sbt))
-#+end_src
-** Terraform
-#+begin_src emacs-lisp
+
 ;; (after! terraform-mode
 
 ;;                 )
-#+end_src
 
-* Visual
-** Bookmark
-#+begin_src emacs-lisp
 (map! :leader
       (:prefix ("v" . "Bookmark")
       :mode lsp-ui-mode-map
@@ -361,14 +267,8 @@ debugging scala
       "l" #'bm-next
 ))
 
-#+end_src
-** Rainbow
-#+begin_src emacs-lisp
 (add-hook! 'prog-mode-hook 'rainbow-delimiters-mode)
-#+end_src
 
-* QUICK FIX
-#+BEGIN_SRC emacs-lisp
 (add-hook! 'prog-mode-hook 'visual-line-mode)
 (add-hook! 'prog-mode-hook 'popwin-mode)
 
@@ -414,7 +314,3 @@ debugging scala
 (add-hook! 'csv-mode-hook
            'csv-align-mode
            'csv-header-line)
-
-(setq whitespace-style '(trailing tabs newline tab-mark newline-mark))
-
-#+END_SRC

@@ -78,7 +78,11 @@
 
 (package! lsp-metals)
 
+(package! csv-mode)
+
 (package! bm)
+
+(package! terraform-doc)
 
 (use-package posframe)
 (package! dap-mode)

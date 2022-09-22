@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: checkov ignore
+# key: checkov
+# --
+
+#checkov:skip=${1:ID}:${2:Text}

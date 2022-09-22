@@ -21,6 +21,10 @@
       "k" 'evil-next-visual-line
       "l" 'evil-previous-visual-line)
 
+(map!
+      :n "C-M-s-j" #'evil-backward-paragraph
+      :n "C-M-s-k" #'evil-forward-paragraph)
+
 (map! :leader
     ;; Navigation
     "<left>"     #'evil-window-left
@@ -34,6 +38,10 @@
     "C-<right>"      #'+evil/window-move-right
     "M-<right>" #'evil-window-vsplit
     "M-<down>" #'evil-window-split)
+
+(map!
+      :niv "s-c" #'evil-yank
+      :niv "s-v" #'evil-paste-after)
 
 (map! :after evil
       :niv "C-c" #'evil-yank
@@ -136,6 +144,17 @@
 (setq which-key-idle-delay 0.1)
 (which-key-mode)
 
+(defun open-iterm ()
+  (interactive)
+  (shell-command "open -a iterm.app .")
+)
+
+(map! :leader
+      (:prefix ("z")
+      :desc "Open current location in iterm"
+      "x" #'open-iterm
+      ))
+
 (setq centaur-tabs-style "bar"
       centaur-tabs-headline-match t
       centaur-tabs-set-bar 'over
@@ -192,6 +211,9 @@
 ;; (add-hook! 'terraform-mode (lambda () (setq-local company-backends '((company-capf :with company-terraform)))))
 (add-hook! 'after-init-hook 'company-flx-mode)
 (add-hook! 'after-init-hook 'global-company-mode)
+;; (after! terraform-mode
+;;   company-terraform-init
+;;                 )
 
 ;; (defun jcs--company-complete-selection--advice-around (fn)
 ;;     "Advice execute around `company-complete-selection' command."
@@ -301,3 +323,12 @@
 (map! :after evil
       :n "(" #'backward-sexp
       :n ")" #'forward-sexp)
+
+
+
+;;CSV mode
+(add-hook! 'csv-mode-hook
+           'csv-align-mode
+           'csv-header-line)
+
+(setq whitespace-style '(trailing tabs newline tab-mark newline-mark))
