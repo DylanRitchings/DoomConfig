@@ -95,3 +95,6 @@
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map))
+
+
+(package! org-download)

@@ -144,16 +144,43 @@
 (setq which-key-idle-delay 0.1)
 (which-key-mode)
 
+(setq shell-file-name "zsh")
+(setq shell-command-switch "-c")
+
 (defun open-iterm ()
   (interactive)
-  (shell-command "open -a iterm.app .")
-)
+  (shell-command "open -a iterm.app ."))
 
 (map! :leader
       (:prefix ("z")
       :desc "Open current location in iterm"
       "x" #'open-iterm
       ))
+
+(defun git-add ()
+  (interactive)
+  (shell-command "git add $(git rev-parse --show-toplevel)"))
+
+;; (defun send-term-command (command)
+;;   (message (concat "running: " command))
+;;   (call-process "~/.doom.d/open_iterm.sh" nil nil nil "send-keys" "-t 1" command "C-m")
+;; )
+
+;; (defun send-term-command (command)
+;;   (message (concat "running: " command))
+;;   (shell-command (concat "open -a iterm.app ." command)
+;; )
+
+;; ;; (defun open-iterm2 ()
+;; ;;   (interactive)
+;; ;;   (call-process "~/.doom.d/open_iterm.sh")
+;; ;;                 )
+
+
+;; (defun git-commit ()
+;;   (interactive)
+;;   ;; (open-iterm)
+;;   (iterm-send-string "git commit -m test"))
 
 (setq centaur-tabs-style "bar"
       centaur-tabs-headline-match t
@@ -255,6 +282,7 @@
 
 (add-hook! scala-mode-hook dap-mode)
 (add-hook! scala-mode-hook dap-ui-mode)
+(setq lsp-metals-super-method-lenses-enabled t)
 
 (defun vterm-sbt ()
   (interactive)
@@ -268,8 +296,24 @@
       :desc "Run Scala"
       "s" #'vterm-sbt))
 
+(setq lsp-enable-links t)
+(setq lsp-semantic-tokens-enable t)
+(setq lsp-semantic-tokens-honor-refresh-requests t)
+(setq lsp-terraform-ls-enable-show-reference t)
+
+
+(setq lsp-terraform-ls-module-calls-position-params ".terraform/modules")
+
+(setq +terraform-runner "tfbuild IDV IDV")
+
+(setq lsp-terraform-enable-logging t)
+(setq terraform-format-on-save-mode t)
+(setq lsp-disabled-clients '(tfls))
 ;; (after! terraform-mode
 
+(setq flycheck-tflint-variable-files '("variables.tf"))
+
+(setq flycheck-terraform-tflint-executable "/opt/homebrew/bin/tflint")
 ;;                 )
 
 (map! :leader
@@ -284,6 +328,12 @@
 ))
 
 (add-hook! 'prog-mode-hook 'rainbow-delimiters-mode)
+
+(setq lpr-switches
+      (append '("-P" "DeskJet_2700"
+                "-o" "sides=two-sided-long-edge"
+                "-o" "number-up=2")
+              lpr-switches))
 
 (add-hook! 'prog-mode-hook 'visual-line-mode)
 (add-hook! 'prog-mode-hook 'popwin-mode)
@@ -332,3 +382,5 @@
            'csv-header-line)
 
 (setq whitespace-style '(trailing tabs newline tab-mark newline-mark))
+
+(setq lsp-dired-mode t)

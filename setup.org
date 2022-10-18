@@ -184,10 +184,12 @@
 #+END_SRC
 ** Open in iterm
 #+BEGIN_SRC emacs-lisp
+(setq shell-file-name "zsh")
+(setq shell-command-switch "-c")
+
 (defun open-iterm ()
   (interactive)
-  (shell-command "open -a iterm.app .")
-)
+  (shell-command "open -a iterm.app ."))
 
 (map! :leader
       (:prefix ("z")
@@ -197,7 +199,34 @@
 
 #+END_SRC
 
+** git fix
+#+BEGIN_SRC emacs-lisp
+(defun git-add ()
+  (interactive)
+  (shell-command "git add $(git rev-parse --show-toplevel)"))
 
+;; (defun send-term-command (command)
+;;   (message (concat "running: " command))
+;;   (call-process "~/.doom.d/open_iterm.sh" nil nil nil "send-keys" "-t 1" command "C-m")
+;; )
+
+;; (defun send-term-command (command)
+;;   (message (concat "running: " command))
+;;   (shell-command (concat "open -a iterm.app ." command)
+;; )
+
+;; ;; (defun open-iterm2 ()
+;; ;;   (interactive)
+;; ;;   (call-process "~/.doom.d/open_iterm.sh")
+;; ;;                 )
+
+
+;; (defun git-commit ()
+;;   (interactive)
+;;   ;; (open-iterm)
+;;   (iterm-send-string "git commit -m test"))
+
+#+END_SRC
 * Package configs
 ** Centaur tabs
 #+BEGIN_SRC emacs-lisp
@@ -325,6 +354,7 @@ debugging scala
 #+begin_src emacs-lisp
 (add-hook! scala-mode-hook dap-mode)
 (add-hook! scala-mode-hook dap-ui-mode)
+(setq lsp-metals-super-method-lenses-enabled t)
 #+end_src
 *** run in zshell
 #+begin_src emacs-lisp
@@ -342,8 +372,24 @@ debugging scala
 #+end_src
 ** Terraform
 #+begin_src emacs-lisp
+(setq lsp-enable-links t)
+(setq lsp-semantic-tokens-enable t)
+(setq lsp-semantic-tokens-honor-refresh-requests t)
+(setq lsp-terraform-ls-enable-show-reference t)
+
+
+(setq lsp-terraform-ls-module-calls-position-params ".terraform/modules")
+
+(setq +terraform-runner "tfbuild IDV IDV")
+
+(setq lsp-terraform-enable-logging t)
+(setq terraform-format-on-save-mode t)
+(setq lsp-disabled-clients '(tfls))
 ;; (after! terraform-mode
 
+(setq flycheck-tflint-variable-files '("variables.tf"))
+
+(setq flycheck-terraform-tflint-executable "/opt/homebrew/bin/tflint")
 ;;                 )
 #+end_src
 
@@ -366,7 +412,16 @@ debugging scala
 #+begin_src emacs-lisp
 (add-hook! 'prog-mode-hook 'rainbow-delimiters-mode)
 #+end_src
+* Printing
+#+begin_src emacs-lisp
 
+(setq lpr-switches
+      (append '("-P" "DeskJet_2700"
+                "-o" "sides=two-sided-long-edge"
+                "-o" "number-up=2")
+              lpr-switches))
+
+#+end_src
 * QUICK FIX
 #+BEGIN_SRC emacs-lisp
 (add-hook! 'prog-mode-hook 'visual-line-mode)
@@ -417,4 +472,5 @@ debugging scala
 
 (setq whitespace-style '(trailing tabs newline tab-mark newline-mark))
 
+(setq lsp-dired-mode t)
 #+END_SRC
