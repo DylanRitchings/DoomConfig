@@ -136,6 +136,11 @@
 (after! save-buffer
   (set-buffer-file-coding-system unix))
 
+(map! :leader
+      (:prefix ("c")
+       :desc "replace project wide")
+      "r" #'projectile-replace)
+
 (setq confirm-kill-emacs nil)
 
 (setq doom-modeline-vcs-max-length 50)
@@ -213,6 +218,7 @@
 (setq lsp-ui-doc-position "top")
 (setq lsp-ui-flycheck-enable t)
 (setq lsp-ui-sideline-show-flycheck t)
+(setq lsp-use-plists t)
 )
 
 (defun dotfiles--lsp-deferred-if-supported ()
@@ -220,6 +226,7 @@
   (unless (derived-mode-p 'emacs-lisp-mode)
     (lsp-deferred)))
 
+(setq lsp-log-io nil)
 (add-hook! 'prog-mode-hook 'dotfiles--lsp-deferred-if-supported)
 (add-hook! 'terraform-mode 'lsp-mode)
 (add-hook! 'python-mode 'lsp-mode)
@@ -278,6 +285,8 @@
 ;; ;; (company-fuzzy-mode)
 ;; ;; (company-fuzzy-mode)
 
+(setq! company-idle-delay 0)
+
 
 
 (add-hook! scala-mode-hook dap-mode)
@@ -302,11 +311,11 @@
 (setq lsp-terraform-ls-enable-show-reference t)
 
 
-(setq lsp-terraform-ls-module-calls-position-params ".terraform/modules")
+;;(setq lsp-terraform-ls-module-calls-position-params ".terraform/modules")
 
 (setq +terraform-runner "tfbuild IDV IDV")
 
-(setq lsp-terraform-enable-logging t)
+;;(setq lsp-terraform-enable-logging t)
 (setq terraform-format-on-save-mode t)
 (setq lsp-disabled-clients '(tfls))
 ;; (after! terraform-mode
