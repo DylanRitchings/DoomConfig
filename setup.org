@@ -168,6 +168,7 @@
 #+RESULTS:
 
 * Ease Of Use
+
 ** Project replace
 #+begin_src emacs-lisp
 (map! :leader
@@ -222,11 +223,6 @@
 ;;   (shell-command (concat "open -a iterm.app ." command)
 ;; )
 
-;; ;; (defun open-iterm2 ()
-;; ;;   (interactive)
-;; ;;   (call-process "~/.doom.d/open_iterm.sh")
-;; ;;                 )
-
 
 ;; (defun git-commit ()
 ;;   (interactive)
@@ -234,6 +230,36 @@
 ;;   (iterm-send-string "git commit -m test"))
 
 #+END_SRC
+
+
+** Run command in iTerm 2
+
+#+begin_SRC emacs-lisp
+
+
+
+(defun doom/iterm2-run (command)
+  "Open a new tab in the current iTerm2 window, change to the current directory, and run COMMAND asynchronously, keeping the iTerm2 window open after the command finishes."
+  (interactive "sCommand to run: ")
+  (let ((default-directory (file-name-directory (buffer-file-name))))
+    (start-process "iTerm2" nil "osascript" "-e"
+                   (concat "tell application \"iTerm2\"
+                               activate
+                               tell current window
+                                   set newTab to (create tab with default profile)
+                                   tell newTab
+                                       tell current session
+                                           write text \"cd " default-directory "\"
+                                           write text \"" command "\"
+                                       end tell
+                                   end tell
+                               end tell
+                           end tell"))))
+
+
+
+
+#+end_SRC
 * Package configs
 ** Centaur tabs
 #+BEGIN_SRC emacs-lisp
@@ -490,4 +516,6 @@ debugging scala
 (setq! whitespace-style '(trailing tabs newline tab-mark newline-mark))
 
 (setq! lsp-dired-mode t)
+
+;; (setq! format-on-save-enabled-modes ((not emacs-lisp-mode sql-mode tex-mode latex-mode org-msg-edit-mode c-mode)))
 #+END_SRC

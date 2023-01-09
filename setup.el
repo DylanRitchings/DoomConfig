@@ -141,16 +141,16 @@
        :desc "replace project wide")
       "r" #'projectile-replace)
 
-(setq confirm-kill-emacs nil)
+(setq! confirm-kill-emacs nil)
 
-(setq doom-modeline-vcs-max-length 50)
+(setq! doom-modeline-vcs-max-length 50)
 
 (require 'which-key)
-(setq which-key-idle-delay 0.1)
+(setq! which-key-idle-delay 0.1)
 (which-key-mode)
 
-(setq shell-file-name "zsh")
-(setq shell-command-switch "-c")
+(setq! shell-file-name "zsh")
+(setq! shell-command-switch "-c")
 
 (defun open-iterm ()
   (interactive)
@@ -176,18 +176,31 @@
 ;;   (shell-command (concat "open -a iterm.app ." command)
 ;; )
 
-;; ;; (defun open-iterm2 ()
-;; ;;   (interactive)
-;; ;;   (call-process "~/.doom.d/open_iterm.sh")
-;; ;;                 )
-
 
 ;; (defun git-commit ()
 ;;   (interactive)
 ;;   ;; (open-iterm)
 ;;   (iterm-send-string "git commit -m test"))
 
-(setq centaur-tabs-style "bar"
+(defun doom/iterm2-run (command)
+  "Open a new tab in the current iTerm2 window, change to the current directory, and run COMMAND asynchronously, keeping the iTerm2 window open after the command finishes."
+  (interactive "sCommand to run: ")
+  (let ((default-directory (file-name-directory (buffer-file-name))))
+    (start-process "iTerm2" nil "osascript" "-e"
+                   (concat "tell application \"iTerm2\"
+                               activate
+                               tell current window
+                                   set newTab to (create tab with default profile)
+                                   tell newTab
+                                       tell current session
+                                           write text \"cd " default-directory "\"
+                                           write text \"" command "\"
+                                       end tell
+                                   end tell
+                               end tell
+                           end tell"))))
+
+(setq! centaur-tabs-style "bar"
       centaur-tabs-headline-match t
       centaur-tabs-set-bar 'over
       centaur-tabs-set-icons t
@@ -210,15 +223,15 @@
       )
 
 (after! lsp-ui
-(setq lsp-ui-sideline t)
-(setq lsp-ui-sideline-show-hover t)
-(setq lsp-ui-sideline-enable t)
-(setq lsp-ui-doc-enable t)
-(setq lsp-ui-doc-show-with-cursor t)
-(setq lsp-ui-doc-position "top")
-(setq lsp-ui-flycheck-enable t)
-(setq lsp-ui-sideline-show-flycheck t)
-(setq lsp-use-plists t)
+(setq! lsp-ui-sideline t)
+(setq! lsp-ui-sideline-show-hover t)
+(setq! lsp-ui-sideline-enable t)
+(setq! lsp-ui-doc-enable t)
+(setq! lsp-ui-doc-show-with-cursor t)
+(setq! lsp-ui-doc-position "top")
+(setq! lsp-ui-flycheck-enable t)
+(setq! lsp-ui-sideline-show-flycheck t)
+(setq! lsp-use-plists t)
 )
 
 (defun dotfiles--lsp-deferred-if-supported ()
@@ -226,12 +239,12 @@
   (unless (derived-mode-p 'emacs-lisp-mode)
     (lsp-deferred)))
 
-(setq lsp-log-io nil)
+(setq! lsp-log-io nil)
 (add-hook! 'prog-mode-hook 'dotfiles--lsp-deferred-if-supported)
 (add-hook! 'terraform-mode 'lsp-mode)
 (add-hook! 'python-mode 'lsp-mode)
 
-(setq company-backends
+(setq! company-backends
     '(
       ;; (company-files :with company-yasnippet company-terraform company-tabnine)
       (company-capf :with company-yasnippet  company-tabnine)
@@ -239,7 +252,7 @@
 ;;       (company-dabbrev :with company-yasnippet company-terraform company-tabnine)
       ))
 (company-quickhelp-mode)
-;; (setq global-company-mode t)
+;; (setq! global-company-mode t)
 (add-hook! 'lsp-managed-mode-hook (lambda () (setq-local company-backends )))
 (company-terraform-init)
 ;; (add-hook! 'terraform-mode (lambda () (setq-local company-backends '((company-capf :with company-terraform)))))
@@ -256,9 +269,9 @@
 ;;     (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
 
 ;; (after! terraform-mode
-;; (setq company-fuzzy-sorting-backend 'flx)
+;; (setq! company-fuzzy-sorting-backend 'flx)
 
-;; (setq company-minimum-prefix-length 1
+;; (setq! company-minimum-prefix-length 1
 ;;       company-idle-delay 0.0) ;; default is 0.2
 
 ;; (map! :n "<tab>" 'company-capf)
@@ -268,17 +281,17 @@
 ;; ;; (company-fuzzy-mode 1)
 
 ;; ;; (after! doom-company
-;; ;;   (setq company-fuzzy-mode 1)
+;; ;;   (setq! company-fuzzy-mode 1)
 ;; ;;   (add-hook! 'find-file-hook 'company-fuzzy-mode)
 ;; ;; )
 ;; (after! company
-;;   (setq company-fuzzy-mode 1)
+;;   (setq! company-fuzzy-mode 1)
 ;;   (add-hook! 'find-file-hook 'company-fuzzy-mode)
 ;; )
 ;; )
 ;; ;; (add-hook! 'terraform-mode-hook 'company-fuzzy-mode)
 
-;; ;; (setq global-company-mode t)
+;; ;; (setq! global-company-mode t)
 
 ;; ;; (after! terraform-mode
 ;; ;;   (company-fuzzy-mode))
@@ -286,12 +299,13 @@
 ;; ;; (company-fuzzy-mode)
 
 (setq! company-idle-delay 0)
+(setq! company-minimum-prefix-length 1)
 
 
 
 (add-hook! scala-mode-hook dap-mode)
 (add-hook! scala-mode-hook dap-ui-mode)
-(setq lsp-metals-super-method-lenses-enabled t)
+(setq! lsp-metals-super-method-lenses-enabled t)
 
 (defun vterm-sbt ()
   (interactive)
@@ -305,24 +319,24 @@
       :desc "Run Scala"
       "s" #'vterm-sbt))
 
-(setq lsp-enable-links t)
-(setq lsp-semantic-tokens-enable t)
-(setq lsp-semantic-tokens-honor-refresh-requests t)
-(setq lsp-terraform-ls-enable-show-reference t)
+(setq! lsp-enable-links t)
+(setq! lsp-semantic-tokens-enable t)
+(setq! lsp-semantic-tokens-honor-refresh-requests t)
+(setq! lsp-terraform-ls-enable-show-reference t)
 
 
-;;(setq lsp-terraform-ls-module-calls-position-params ".terraform/modules")
+;;(setq! lsp-terraform-ls-module-calls-position-params ".terraform/modules")
 
-(setq +terraform-runner "tfbuild IDV IDV")
+(setq! +terraform-runner "tfbuild IDV IDV")
 
-;;(setq lsp-terraform-enable-logging t)
-(setq terraform-format-on-save-mode t)
-(setq lsp-disabled-clients '(tfls))
+;;(setq! lsp-terraform-enable-logging t)
+(setq! terraform-format-on-save-mode t)
+(setq! lsp-disabled-clients '(tfls))
 ;; (after! terraform-mode
 
-(setq flycheck-tflint-variable-files '("variables.tf"))
+(setq! flycheck-tflint-variable-files '("variables.tf"))
 
-(setq flycheck-terraform-tflint-executable "/opt/homebrew/bin/tflint")
+(setq! flycheck-terraform-tflint-executable "/opt/homebrew/bin/tflint")
 ;;                 )
 
 (map! :leader
@@ -338,7 +352,7 @@
 
 (add-hook! 'prog-mode-hook 'rainbow-delimiters-mode)
 
-(setq lpr-switches
+(setq! lpr-switches
       (append '("-P" "DeskJet_2700"
                 "-o" "sides=two-sided-long-edge"
                 "-o" "number-up=2")
@@ -353,7 +367,7 @@
 ;; (push "*vc-diff*" popwin:special-display-config)
 ;; (push "*vc-change-log*" popwin:special-display-config)
 
-(setq compilation-window-height 15)
+(setq! compilation-window-height 15)
 
 ;; ;; Helper for compilation. Close the compilation window if
 ;; ;; there was no error at all. (emacs wiki)
@@ -367,7 +381,7 @@
 ;;   ;; Always return the anticipated result of compilation-exit-message-function
 ;;   (cons msg code))
 ;; ;; Specify my function (maybe I should have done a lambda function)
-;; (setq compilation-exit-message-function 'compilation-exit-autoclose)
+;; (setq! compilation-exit-message-function 'compilation-exit-autoclose)
 
 ;; start-server
 (add-hook! 'after-init-hook 'server-mode)
@@ -390,6 +404,8 @@
            'csv-align-mode
            'csv-header-line)
 
-(setq whitespace-style '(trailing tabs newline tab-mark newline-mark))
+(setq! whitespace-style '(trailing tabs newline tab-mark newline-mark))
 
-(setq lsp-dired-mode t)
+(setq! lsp-dired-mode t)
+
+;; (setq! format-on-save-enabled-modes ((not emacs-lisp-mode sql-mode tex-mode latex-mode org-msg-edit-mode c-mode)))
